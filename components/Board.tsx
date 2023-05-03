@@ -5,6 +5,7 @@ const cell_style_0 = "m-1 text-4xl font-sigmar_ font-black w-14 h-14 rounded-lg 
 const cell_style_1 = "text-red-500"
 const cell_style_2 = "text-blue-500"
 
+
 export default function Board(){
 
     const [cells, setCells] = useState(Array(9).fill(null))
