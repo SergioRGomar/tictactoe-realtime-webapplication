@@ -1,5 +1,4 @@
 import { Schema} from 'mongoose'
-
 export const gameSchema = new Schema({
     board: {
         type:Array<String>,

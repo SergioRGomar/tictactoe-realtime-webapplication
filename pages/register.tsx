@@ -32,7 +32,6 @@ export default function Register(){
             alert("the passwords are not match")
             return
         }
-
         fetch(`http://localhost:3001/users`,
         { 
           method: "POST", 
@@ -55,7 +54,6 @@ export default function Register(){
                 window.location.href = "login/"
             }  
         })
-        
     }
     return(
         <section className="bg-gray-400">

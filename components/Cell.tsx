@@ -1,7 +1,13 @@
 
-export default function Cell(props:any){
+type propsCell = {
+    onCellClick:Function,
+    cellStyle:string,
+    value:string
+}
+
+export default function Cell(props:propsCell){
     return(
-        <div onClick={props.onCellClick} className={props.cellStyle}>
+        <div onClick={e=>props.onCellClick()} className={props.cellStyle}>
             {props.value}
         </div>
     )

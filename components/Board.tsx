@@ -6,10 +6,15 @@ const cell_style_player_1 = "text-red-500"
 const cell_style_player_2 = "text-blue-500"
 const cell_style_winner = "text-green-60"
 
-export default function Board(props:any){
+type boardProps = {
+    player:string,
+    boardState:Array<string>
+    labelGameStatus:string,
+    onCellClick:Function  
+}
+export default function Board(props:boardProps){
 
-    const [cells, setCells] = useState(props.board)
-    const [cellStyles, setCellStyles] = useState(Array(9).fill(cell_style_default))
+    const [cellStyles] = useState(Array(9).fill(cell_style_default))
 
     return(
         <>

@@ -117,8 +117,12 @@ export default function Home(){
     socket.on("updateGame",(objGame)=>{
       setGameState(objGame)
 
-      if(objGame.result === "draw")
+      if(objGame.result === "draw"){
         setLabelTurn("Draw")
+        setTimeout(()=>{
+          location.href="/"
+        },3000)
+      }
 
       if(objGame.winner !== null){
         if(objGame.winner._id === getCookie('user_id_tictactoe'))

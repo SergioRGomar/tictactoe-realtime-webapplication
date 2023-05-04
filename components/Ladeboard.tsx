@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react"
 import { getLadeboard } from "../general/httprequest"
 
-
+type userLadeboard = {
+    _id:string,
+    username:string,
+    victories:number
+}
 export default function Ladeboard(){
 
-    const [users,setUsers] = useState(Array<any>)
+    const [users,setUsers] = useState(Array<userLadeboard>)
 
     useEffect(()=>{
         getLadeboard().then((response)=>{

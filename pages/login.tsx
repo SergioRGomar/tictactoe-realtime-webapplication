@@ -6,7 +6,6 @@ export default function Login(){
         email:"",
         password:""
     })
-
     const handleInputChange = (event: { target: { name: string; value: string } })=>{
         const {name,value} = event.target
         setValues({
@@ -52,7 +51,6 @@ export default function Login(){
     }
 
     return(
-        
         <section className="bg-gray-600">
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
                 <div className="w-full bg-gray-900 rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">

@@ -25,7 +25,6 @@ userRouter.get("/",async (req,res) =>{
 
 })
 
-
 userRouter.post("/",async (req,res) =>{
 
     const {password,email,action} = req.body
@@ -37,7 +36,7 @@ userRouter.post("/",async (req,res) =>{
         const currentUser = await userModel.find(match);
 
         if(currentUser.length !== 0){
-            res.status(200).send({error:"this email is already in use"})
+            res.status(200).send({error:"this user is already in use"})
         }else{
             try{
                 req.body.status="offline"
@@ -58,7 +57,7 @@ userRouter.post("/",async (req,res) =>{
         const currentUser = await userModel.find(match)
 
         if(currentUser.length === 0){
-            res.status(200).send({error:"this email is not exist"})
+            res.status(200).send({error:"this user is not exist"})
         }else{
             const encryptedPasword = currentUser[0].password
             
@@ -78,5 +77,5 @@ userRouter.post("/",async (req,res) =>{
 })
 
 userRouter.get("/",async (req,res) =>{
-    res.send("aaa")
+    res.send("get")
 })

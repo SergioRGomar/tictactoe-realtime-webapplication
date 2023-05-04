@@ -1,4 +1,4 @@
-type objGame = {
+type objGame =  {
     _id:string,
     board:Array<string>,
     player_1:object,

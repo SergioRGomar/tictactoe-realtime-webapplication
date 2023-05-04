@@ -1,7 +1,6 @@
 
 const urlUsersApi = "http://localhost:3001/users"
 
-
 export const getUser = async (user_id:string) => {
     try{
         const response = await fetch(`${urlUsersApi}?user_id=${user_id}`,{ 

@@ -1,5 +1,4 @@
 import { Schema} from 'mongoose'
-
 export const ladeboardSchema = new Schema({
     user_id: {
         type:String,

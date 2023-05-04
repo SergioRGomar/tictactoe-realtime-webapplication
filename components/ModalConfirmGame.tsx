@@ -1,7 +1,15 @@
 import { useState } from 'react'
 import styles from '../styles/modal.module.css'
 
-export default function ModalAceptGame(props:any){
+
+type propsModalAceptGame = {
+    player:string,
+    onDeclineGame:Function,
+    onAcceptGame:Function,
+    enemyStatusText:string,
+    showBotons:string
+}
+export default function ModalConfirmGame(props:propsModalAceptGame){
 
     const [isGameAccepted,setIsGameAccepted] = useState(false)
     function gameAccepted(){

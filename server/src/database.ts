@@ -3,6 +3,38 @@ import { userModel } from './users/userModel'
 import { gameModel } from './games/gameModel'
 import { ladeboardModel } from './ladeboards/ladeboardModel'
 
+
+type typeObjGame_= {
+    _id:string,
+    board:Array<string>,
+    player_1:object,
+    player_2:object,
+    turn:string,
+    status:string,
+    date:object,
+    movements:number,
+    winner:object,
+    result:string
+}
+
+
+type typeObjGame= {
+    board:Array<string>,
+    player_1:object,
+    player_2:object,
+    turn:string,
+    status:string,
+    date:object,
+    movements:number,
+    winner:object,
+    result:string
+}
+
+type typeObjPlayer = {
+    _id:string,
+    socket_id:string,
+    email:string
+}
 export const startdbConnection = async (URL_MONGO:string,database:string) => {
     try{
         const cluster = await connect(URL_MONGO,{dbName: database});
@@ -12,7 +44,6 @@ export const startdbConnection = async (URL_MONGO:string,database:string) => {
         console.error(error);
     }
 };
-
 
 //USERS
 export const updateUserStatus = async (user_id:string,socket_id:string,status:string)=>{
@@ -54,7 +85,7 @@ export const getUsersToPair = async()=>{
 }
 
 ///GAMES
-export const createNewGameRoom = async(objGame:any)=>{
+export const createNewGameRoom = async(objGame:typeObjGame)=>{
     try{
         const newGame = await gameModel.create(objGame)
         return newGame
@@ -82,13 +113,13 @@ export const getGameStatus = async(game_id:string)=>{
     }
 }
 
-export const updateGame = async(newGameState:any)=>{
+export const updateGame = async(newGameState:typeObjGame_)=>{
     if(newGameState.winner !== null)
         newGameState.status = "finished"
     try{
         await gameModel.updateOne({_id:newGameState._id}, newGameState)
         const currentGame =  await gameModel.find({_id:newGameState._id})
-        return currentGame[0]
+        return currentGame
     }
     catch{
         return {error:"an uspected error as ocurred"}
@@ -97,7 +128,7 @@ export const updateGame = async(newGameState:any)=>{
 
 
 //ladeboards
-export const saveVictory = async (player:any)=>{
+export const saveVictory = async (player:typeObjPlayer)=>{
     let victories = 0
     try{
         const currentLadeboard = await ladeboardModel.find({user_id:player._id})
@@ -114,7 +145,7 @@ export const saveVictory = async (player:any)=>{
     }
 }
 
-export const saveDefeat = async (player:any)=>{
+export const saveDefeat = async (player:typeObjPlayer)=>{
     let defeats = 0
     try{
         const currentLadeboard = await ladeboardModel.find({user_id:player._id})
@@ -132,7 +163,7 @@ export const saveDefeat = async (player:any)=>{
 }
 
 
-export const saveDraw = async (player:any)=>{
+export const saveDraw = async (player:typeObjPlayer)=>{
     let draws = 0
     try{
         const currentLadeboard = await ladeboardModel.find({user_id:player._id})

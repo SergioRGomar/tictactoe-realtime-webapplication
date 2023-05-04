@@ -1,3 +1,15 @@
+type typeObjGame = {
+  board: Array<any>,
+  player_1:object,
+  player_2:object,
+  turn:string,
+  status:string,
+  date:object,
+  movements:number,
+  winner:object,
+  result:string
+}
+
 import cors from 'cors';
 import express from 'express'
 import { createServer } from "http";
@@ -11,8 +23,9 @@ const server = createServer(app)
 
 import { config } from 'dotenv';
 config();
-//const PORT = process.env.PORT;
-//const URL_MONGO = process.env.URL_MONGO;
+
+const PORT = process.env.PORT!
+const URL_MONGO= process.env.URL_MONGO!
 
 const allowedOrigins = ['http://localhost:3000'];
 const options: cors.CorsOptions = { origin: allowedOrigins }
@@ -20,6 +33,7 @@ const options: cors.CorsOptions = { origin: allowedOrigins }
 app.use(cors(options));
 app.use(express.json())
 app.use('/users',userRouter)
+
 
 const database = "tictactoe"
 startdbConnection(URL_MONGO,database).then(()=>{
@@ -30,7 +44,7 @@ startdbConnection(URL_MONGO,database).then(()=>{
     let pairingProcess:Function = ()=>{}
     const io = new Server(server, {  cors: { origin: "*",}})
 
-    io.on('connection', (socket:any) => {
+    io.on('connection', (socket) => {
       
       //user is disconnected
       socket.on('disconnect', () => {
@@ -57,7 +71,7 @@ startdbConnection(URL_MONGO,database).then(()=>{
       })
 
       //user decline a game
-      socket.on("declineGame",(objGame:any,userData:any)=>{
+      socket.on("declineGame",(objGame,userData)=>{
         updateUserStatus(userData._id,socket.id,"online")
           .then(()=>{
             if(objGame.player_1._id === userData._id)
@@ -69,7 +83,7 @@ startdbConnection(URL_MONGO,database).then(()=>{
           })
       })
 
-      socket.on("acceptGame",(objGame:any,userData:any)=>{
+      socket.on("acceptGame",(objGame,userData)=>{
         if(objGame.player_1._id === userData._id)
           socket.to(objGame.player_2.socket_id).emit("gameAcceptedByEnemy")
         else
@@ -89,18 +103,18 @@ startdbConnection(URL_MONGO,database).then(()=>{
           })
         })
 
-        socket.on("newPlayerMovement",(newGameState:any)=>{
+        socket.on("newPlayerMovement",(newGameState)=>{
           updateGame(newGameState)
-            .then((objGame:any)=>{
-              io.to(objGame.player_1.socket_id ).to(objGame.player_2.socket_id).emit("updateGame",objGame)
+            .then(()=>{
+              io.to(newGameState.player_1.socket_id ).to(newGameState.player_2.socket_id).emit("updateGame",newGameState)
             })
         })
 
-        socket.on("playerWin",(player:any)=> saveVictory(player))
+        socket.on("playerWin",(player)=> saveVictory(player))
 
-        socket.on("playeDefeat",(player:any)=> saveDefeat(player))
+        socket.on("playeDefeat",(player)=> saveDefeat(player))
 
-        socket.on("playersDraw",(player_1:any,player_2:any)=>{
+        socket.on("playersDraw",(player_1,player_2)=>{
           saveDraw(player_1)
           saveDraw(player_2)
         })
@@ -109,16 +123,16 @@ startdbConnection(URL_MONGO,database).then(()=>{
     })
     
     //Function to notify users of a new game and send object with the init game
-    pairingProcess = async (users:any)=>{
+    pairingProcess = async (users: { socket_id: string | string[]; }[])=>{
       const random = Math.floor(Math.random() * 2 )
-      const objGame = {
+      const objGame:typeObjGame = {
         board:[null,null,null,null,null,null,null,null,null],
         turn:"O",
         player_1:users[0+random],
         player_2:users[1-random],
         status:"created",
         movements:0,
-        winner:null,
+        winner:null!,
         result:"",
         date: new Date()
       }
@@ -131,7 +145,7 @@ startdbConnection(URL_MONGO,database).then(()=>{
     
     //Algorithm of pairing 
     const pairingIntelligence = ()=>{
-      getUsersToPair().then((response:any)=>{
+      getUsersToPair().then((response)=>{
         if(response.error){
           console.log(response.error)
         }else{
