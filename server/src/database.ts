@@ -1,6 +1,6 @@
 import {connect} from "mongoose";
 import { userModel } from './users/userModel'
-import { stat } from "fs";
+import { gameModel } from './games/gameModel'
 
 export const startdbConnection = async (URL_MONGO:string,database:string) => {
     try{
@@ -12,16 +12,16 @@ export const startdbConnection = async (URL_MONGO:string,database:string) => {
     }
 };
 
+
+//USERS
 export const updateUserStatus = async (user_id:string,socket_id:string,status:string)=>{
     
     ///HAY QUE BUSCAR SI EL USUARIO ESTABA YA EN UN JUEGO Y LO MANDAMOS AL JUEGO
-
     let match = {}
     if(user_id === "")
         match = {socket_id: socket_id}
     else
         match = {_id: user_id}
-
     try{
         const socket_aux = socket_id
         if(status === "offline")
@@ -43,7 +43,6 @@ export const getUsersToPair = async()=>{
             const user_2 = currentUsers[1]
             await userModel.updateOne({_id:user_1._id}, {status:"decidingToPlay"})
             await userModel.updateOne({_id:user_2._id}, {status:"decidingToPlay"})
-            console.log("users finded")
             return {usersToPair:[user_1,user_2]}
         }else{
             return {error:"no users available to play"}
@@ -52,6 +51,39 @@ export const getUsersToPair = async()=>{
         return {error:"an uspected error as ocurred"}
     }
 }
+
+///GAMES
+export const createNewGameRoom = async(objGame:any)=>{
+    try{
+        const newGame = await gameModel.create(objGame)
+        return newGame
+    }catch{
+        return {error:"an uspected error as ocurred"}
+    }
+}
+
+export const updateGameStatus = async(game_id:string,status:string)=>{
+    try{
+        await gameModel.updateOne({_id:game_id}, {status:status})
+
+        return {message:`game ${game_id} is ${status}`}
+    }catch{
+        return {error:"an uspected error as ocurred"}
+    }
+}
+
+
+export const getGameStatus = async(game_id:string)=>{
+    try{
+        const currentGame =  await gameModel.find({_id:game_id}, "status")
+        return currentGame[0].status
+    }catch{
+        return {error:"an uspected error as ocurred"}
+    }
+}
+
+
+
 
 
 

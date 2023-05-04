@@ -39,7 +39,7 @@ userRouter.post("/",async (req,res) =>{
                 req.body.total_games = 0
                 req.body.socket_id = ""
                 req.body.password = encryptedPasword
-                const createdUser = await userModel.create(req.body)
+                await userModel.create(req.body)
                 res.status(200).send({message:"user created successfully"})
             }catch(error){
                 res.status(200).send({error:"internal server error"})
@@ -68,8 +68,6 @@ userRouter.post("/",async (req,res) =>{
 
     }
 })
-
-
 
 userRouter.get("/",async (req,res) =>{
     res.send("aaa")
