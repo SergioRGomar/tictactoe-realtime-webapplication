@@ -3,7 +3,7 @@ import express from 'express'
 import { createServer } from "http";
 import { Server } from "socket.io";
 
-import { startdbConnection, updateUserStatus, getUsersToPair} from "./database"
+import { startdbConnection, updateUserStatus, getUsersToPair, createNewGameRoom, updateGameStatus, getGameStatus } from "./database"
 import { userRouter } from './users/userRouter'
 
 const app = express()
@@ -13,6 +13,7 @@ import { config } from 'dotenv';
 config();
 //const PORT = process.env.PORT;
 //const URL_MONGO = process.env.URL_MONGO;
+
 
 const allowedOrigins = ['http://localhost:3000'];
 const options: cors.CorsOptions = { origin: allowedOrigins }
@@ -55,21 +56,58 @@ startdbConnection(URL_MONGO,database).then(()=>{
             console.log(response.message)
           })
       })
-      
+
+      //user decline a game
+      socket.on("declineGame",(objGame:any,userData:any)=>{
+        updateUserStatus(userData._id,socket.id,"online")
+          .then(()=>{
+            if(objGame.player_1._id === userData._id)
+              socket.to(objGame.player_2.socket_id).emit("gameDeclinedByEnemy")
+            else
+              socket.to(objGame.player_1.socket_id).emit("gameDeclinedByEnemy")
+            
+            updateGameStatus(objGame._id,"rejected")
+          })
+      })
+
+      socket.on("acceptGame",(objGame:any,userData:any)=>{
+        if(objGame.player_1._id === userData._id)
+          socket.to(objGame.player_2.socket_id).emit("gameAcceptedByEnemy")
+        else
+          socket.to(objGame.player_1.socket_id).emit("gameAcceptedByEnemy")
+        
+        getGameStatus(objGame._id)
+          .then((status)=>{
+            if(status !== "half-accepted")
+              updateGameStatus(objGame._id,"half-accepted")
+            else{
+              updateGameStatus(objGame._id,"accepted")
+              io.to(objGame.player_1.socket_id).to(objGame.player_2.socket_id).emit("startGame","startgame")
+            }
+          })
+        })
+
     })
     
     //Function to notify users of a new game and send object with the init game
     pairingProcess = async (users:any)=>{
+      const random = Math.floor(Math.random() * 2 )
       const objGame = {
-        board:[null,null,null,null,null,null,null,null],
+        board:[null,null,null,null,null,null,null,null,null],
         turn:false,
-        player:false,
-        //enemy:user
+        player_1:users[0+random],
+        player_2:users[1-random],
+        status:"created",
+        date: new Date()
       }
 
-      io.to(users[0].socket_id).to(users[1].socket_id).emit("initGame",`GAME FINDEND`)
+      createNewGameRoom(objGame)
+        .then((currentGame)=>{
+          io.to(users[0].socket_id).to(users[1].socket_id).emit("initGame",currentGame)
+        })
+     
     }
-
+    
     //Algorithm of pairing 
     const pairingIntelligence = ()=>{
       getUsersToPair().then((response:any)=>{
