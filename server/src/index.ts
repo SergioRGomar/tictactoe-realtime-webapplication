@@ -3,7 +3,7 @@ import express from 'express'
 import { createServer } from "http";
 import { Server } from "socket.io";
 
-import { startdbConnection, updateUserStatus, getUsersToPair, createNewGameRoom, updateGameStatus, getGameStatus } from "./database"
+import { startdbConnection, updateUserStatus, getUsersToPair, createNewGameRoom, updateGameStatus, getGameStatus, updateGame, saveVictory, saveDefeat, saveDraw } from "./database"
 import { userRouter } from './users/userRouter'
 
 const app = express()
@@ -13,7 +13,6 @@ import { config } from 'dotenv';
 config();
 //const PORT = process.env.PORT;
 //const URL_MONGO = process.env.URL_MONGO;
-
 
 const allowedOrigins = ['http://localhost:3000'];
 const options: cors.CorsOptions = { origin: allowedOrigins }
@@ -81,11 +80,31 @@ startdbConnection(URL_MONGO,database).then(()=>{
             if(status !== "half-accepted")
               updateGameStatus(objGame._id,"half-accepted")
             else{
-              updateGameStatus(objGame._id,"accepted")
-              io.to(objGame.player_1.socket_id).to(objGame.player_2.socket_id).emit("startGame","startgame")
+              updateGameStatus(objGame._id,"playing")
+              updateUserStatus(objGame.player_1._id, objGame.player_1.socket_id, "playing")
+              updateUserStatus(objGame.player_2._id, objGame.player_2.socket_id, "playing")
+
+              io.to(objGame.player_1.socket_id).to(objGame.player_2.socket_id).emit("startGame")
             }
           })
         })
+
+        socket.on("newPlayerMovement",(newGameState:any)=>{
+          updateGame(newGameState)
+            .then((objGame:any)=>{
+              io.to(objGame.player_1.socket_id ).to(objGame.player_2.socket_id).emit("updateGame",objGame)
+            })
+        })
+
+        socket.on("playerWin",(player:any)=> saveVictory(player))
+
+        socket.on("playeDefeat",(player:any)=> saveDefeat(player))
+
+        socket.on("playersDraw",(player_1:any,player_2:any)=>{
+          saveDraw(player_1)
+          saveDraw(player_2)
+        })
+
 
     })
     
@@ -94,13 +113,15 @@ startdbConnection(URL_MONGO,database).then(()=>{
       const random = Math.floor(Math.random() * 2 )
       const objGame = {
         board:[null,null,null,null,null,null,null,null,null],
-        turn:false,
+        turn:"O",
         player_1:users[0+random],
         player_2:users[1-random],
         status:"created",
+        movements:0,
+        winner:null,
+        result:"",
         date: new Date()
       }
-
       createNewGameRoom(objGame)
         .then((currentGame)=>{
           io.to(users[0].socket_id).to(users[1].socket_id).emit("initGame",currentGame)
@@ -116,7 +137,7 @@ startdbConnection(URL_MONGO,database).then(()=>{
         }else{
           pairingProcess(response.usersToPair)
         }
-        setTimeout(pairingIntelligence,1000)
+        setTimeout(pairingIntelligence,3000)
       })
     }
     pairingIntelligence()

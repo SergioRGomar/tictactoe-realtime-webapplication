@@ -1,6 +1,7 @@
 import {connect} from "mongoose";
 import { userModel } from './users/userModel'
 import { gameModel } from './games/gameModel'
+import { ladeboardModel } from './ladeboards/ladeboardModel'
 
 export const startdbConnection = async (URL_MONGO:string,database:string) => {
     try{
@@ -57,7 +58,8 @@ export const createNewGameRoom = async(objGame:any)=>{
     try{
         const newGame = await gameModel.create(objGame)
         return newGame
-    }catch{
+    }catch(err){
+        console.log(err)
         return {error:"an uspected error as ocurred"}
     }
 }
@@ -65,13 +67,11 @@ export const createNewGameRoom = async(objGame:any)=>{
 export const updateGameStatus = async(game_id:string,status:string)=>{
     try{
         await gameModel.updateOne({_id:game_id}, {status:status})
-
         return {message:`game ${game_id} is ${status}`}
     }catch{
         return {error:"an uspected error as ocurred"}
     }
 }
-
 
 export const getGameStatus = async(game_id:string)=>{
     try{
@@ -82,8 +82,70 @@ export const getGameStatus = async(game_id:string)=>{
     }
 }
 
+export const updateGame = async(newGameState:any)=>{
+    if(newGameState.winner !== null)
+        newGameState.status = "finished"
+    try{
+        await gameModel.updateOne({_id:newGameState._id}, newGameState)
+        const currentGame =  await gameModel.find({_id:newGameState._id})
+        return currentGame[0]
+    }
+    catch{
+        return {error:"an uspected error as ocurred"}
+    }
+}
 
 
+//ladeboards
+export const saveVictory = async (player:any)=>{
+    let victories = 0
+    try{
+        const currentLadeboard = await ladeboardModel.find({user_id:player._id})
+        if(currentLadeboard.length !== 0){
+            victories  = currentLadeboard[0].victories+1
+            await ladeboardModel.updateOne({_id:currentLadeboard[0]._id},{victories:victories})
+        }else{
+            await ladeboardModel.create({user_id:player._id,draws:0,victories:1,defeats:0})
+        }
+        await userModel.updateOne({_id:player._id},{victories:victories})
+    }
+    catch{
+        return {error:"an uspected error as ocurred"}
+    }
+}
+
+export const saveDefeat = async (player:any)=>{
+    let defeats = 0
+    try{
+        const currentLadeboard = await ladeboardModel.find({user_id:player._id})
+        if(currentLadeboard.length !== 0){
+            defeats  = currentLadeboard[0].defeats+1
+            await ladeboardModel.updateOne({_id:currentLadeboard[0]._id},{defeats:defeats})
+        }else{
+             await ladeboardModel.create({user_id:player._id,draws:0,victories:0,defeats:1})
+        }
+        await userModel.updateOne({_id:player._id},{defeats:defeats})
+    }
+    catch{
+        return {error:"an uspected error as ocurred"}
+    }
+}
 
 
+export const saveDraw = async (player:any)=>{
+    let draws = 0
+    try{
+        const currentLadeboard = await ladeboardModel.find({user_id:player._id})
+        if(currentLadeboard.length !== 0){
+            draws  = currentLadeboard[0].draws+1
+            await ladeboardModel.updateOne({_id:currentLadeboard[0]._id},{draws:draws})
+        }else{
+             await ladeboardModel.create({user_id:player._id,draws:1,victories:0,defeats:0})
+        }
+        await userModel.updateOne({_id:player._id},{draws:draws})
+    }
+    catch{
+        return {error:"an uspected error as ocurred"}
+    }
+}
 

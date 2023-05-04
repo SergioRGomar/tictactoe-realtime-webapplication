@@ -2,7 +2,7 @@ import { Schema} from 'mongoose'
 
 export const gameSchema = new Schema({
     board: {
-        type:Array<Number>,
+        type:Array<String>,
         required:true 
     },
     player_1:{
@@ -14,7 +14,7 @@ export const gameSchema = new Schema({
         required:true
     },
     turn:{
-        type:Boolean,
+        type:String,
         required:true
     },
     status:{
@@ -24,5 +24,17 @@ export const gameSchema = new Schema({
     date:{
         type:Object,
         required:true
+    },
+    movements:{
+        type:Number,
+        required:false
+    },
+    winner:{
+        type:Object,
+        required:false
+    },
+    result:{
+        type:String,
+        required:false
     }
 },{versionKey:false})
