@@ -1,12 +1,10 @@
 import { useState } from "react";
 import Cell from "./Cell";
 
-const cell_style_default = "m-1 text-4xl font-sigmar_ font-black w-14 h-14 rounded-lg flex items-center justify-center bg-white shadow-lg"
+const cell_style_default = "hover:bg-amber-300 m-1 text-4xl font-sigmar_ font-black w-14 h-14 rounded-lg flex items-center justify-center bg-white shadow-lg"
 const cell_style_player_1 = "text-red-500"
 const cell_style_player_2 = "text-blue-500"
-
-const cell_style_winner = "text-green-600 m-1 text-4xl font-sigmar_ font-black w-14 h-14 rounded-lg flex items-center justify-center bg-white shadow-lg"
-
+const cell_style_winner = "text-green-60"
 
 export default function Board(props:any){
 
@@ -15,13 +13,13 @@ export default function Board(props:any){
 
     return(
         <>
-            <div className=" bg-amber-700">
-                <div className="bg-red-300 flex flex-col items-center	">
-                    <h1>TIC TAC TOE GAME</h1>
-                    <h1>You are the player {props.player}</h1>
+            <div className="bg-cyan-100 w-full p-10">
+                <div className="bg-black text-white flex flex-col items-center	">
+                    <h1 className="text-3xl">TIC TAC TOE GAME</h1>
+                    <h1 className="text-green-400">You are the player {props.player}</h1>
                 </div>
                 <div className="board-row flex flex-row justify-center">
-                    <span className="w-full text-center	">{props.labelGameStatus}</span>
+                    <span className="m-4 font-black w-full text-center	text-2xl">{props.labelGameStatus}</span>
                 </div>
                 <div className="board-row flex flex-row justify-center">
                     <Cell cellStyle={cellStyles[0]} value={props.boardState[0]} onCellClick={() => props.onCellClick(0)} />

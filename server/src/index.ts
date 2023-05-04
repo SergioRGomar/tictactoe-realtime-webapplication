@@ -14,9 +14,6 @@ config();
 //const PORT = process.env.PORT;
 //const URL_MONGO = process.env.URL_MONGO;
 
-const PORT = 3001
-const URL_MONGO = "mongodb+srv://sergiorgomar:GbMm5L3jI0X1HBMs@clustersergioservidor.nrl8vir.mongodb.net/?retryWrites=true&w=majority"
-
 const allowedOrigins = ['http://localhost:3000'];
 const options: cors.CorsOptions = { origin: allowedOrigins }
 

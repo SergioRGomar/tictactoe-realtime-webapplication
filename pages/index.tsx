@@ -75,6 +75,9 @@ export default function Home(){
     const [showBoardGame, setShowBoardGame] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
 
+    const [labelTurn, setLabelTurn] = useState("")
+
+
 
     useEffect(() => {
       const user_id = getCookie('user_id_tictactoe')
@@ -103,14 +106,38 @@ export default function Home(){
       setGameState(objGame)
       if(objGame.player_1._id === getCookie('user_id_tictactoe')){
         setCurrentPlayerIcon("O")
+        setLabelTurn("Is your turn")
       }else{
         setCurrentPlayerIcon("X")
+        setLabelTurn("Is turn of the enemy")
       }
       setShowModalAceptGame(true)
     })
 
     socket.on("updateGame",(objGame)=>{
       setGameState(objGame)
+
+      if(objGame.result === "draw")
+        setLabelTurn("Draw")
+
+      if(objGame.winner !== null){
+        if(objGame.winner._id === getCookie('user_id_tictactoe'))
+          setLabelTurn("YOU ARE THE WINNER!")
+        else
+          setLabelTurn("You lost!")
+
+          setTimeout(()=>{
+            location.href="/"
+          },3000)
+      }
+
+
+      if(objGame.result === ""){
+        if(objGame.turn === currentPlayerIcon)
+          setLabelTurn("Is your turn")
+        else 
+          setLabelTurn("Is turn of the enemy")
+      }
       //
     })
 
@@ -126,11 +153,13 @@ export default function Home(){
         if(gameState.board[cellNumber] === null){ //is available
           newGameState.movements+=1
           newGameState.board[cellNumber] = currentPlayerIcon
-          //guardar los estilos
-          if(currentPlayerIcon === "X")
+
+          if(currentPlayerIcon === "X"){
             newGameState.turn = "O"
-          if(currentPlayerIcon === "O")
+          }
+          if(currentPlayerIcon === "O"){
             newGameState.turn = "X"
+          }
 
           const whoIsWinner = calculateWinner(newGameState.board)
           if(whoIsWinner?.winner === "X"){
@@ -138,6 +167,7 @@ export default function Home(){
             newGameState.result = "Player 2 wins"
             socket.emit("playerWin",gameState.player_2)
             socket.emit("playeDefeat",gameState.player_1)
+            
 
           }
           else if(whoIsWinner?.winner === "O"){
@@ -146,12 +176,12 @@ export default function Home(){
             socket.emit("playerWin",gameState.player_1)
             socket.emit("playeDefeat",gameState.player_2)
 
+            
           }
           else if(newGameState.movements === 9){
             newGameState.result = "draw"
             newGameState.status = "finished"
             socket.emit("playersDraw",gameState.player_1,gameState.player_2)
-
           }
           
           socket.emit('newPlayerMovement', newGameState)
@@ -197,29 +227,35 @@ export default function Home(){
     }
     return(
         <main className="bg-amber-300">
-            <div className="w-3/12 bg-red-300 Lobby float-left">
-              <div className="flex flex-col	">
-                <h1>My statics</h1>
-                <span>Username: {userData.email}</span>
-                <span>Victories: {userData.victories}</span>
-                <span>Defeats: {userData.defeats}</span>
-                <span>Draws: {userData.draws}</span>
+            <div className="w-3/12 bg-violet-900 Lobby float-left">
+              <div className="flex flex-col	items-left">
+                <div className="flex flex-col	items-center pt-5">
+                  <h1 className="text-2xl p-2 text-white font-bold">My statistics</h1>
+                </div>
+                <div className="text-m text-green-400 flex flex-col items-center pb-3">
+                  <span><b className="font-black text-white">Username:</b> {userData.email}</span>
+                  <span><b className="font-black text-white">Victories:</b> {userData.victories}</span>
+                  <span><b className="font-black text-white">Defeats:</b> {userData.defeats}</span>
+                  <span><b className="font-black text-white">Draws:</b> {userData.draws}</span>
+                </div>
               </div>
               <Ladeboard />
             </div>
-            <div className="w-9/12 bg-pink-200 p-4 float-left flex flex-col items-center">
+            
+
+            <div className="w-9/12 bg-amber-100 p-4 float-left flex flex-col items-center">
               
              { showBoardGame ? 
 
                 <Board 
                   player={currentPlayerIcon}
                   boardState={gameState.board}
-                  labelGameStatus={`is turn of player ${gameState.turn}`}
+                  labelGameStatus={labelTurn}
                   onCellClick={handleCellClick} 
                 />
                 :undefined }
 
-                <button onClick={clickSearchGame} className="w-4/12 bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">Find a game</button>
+                <button onClick={clickSearchGame} className="m-8 w-4/12 bg-amber-300 hover:bg-amber-500 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">Find a game</button>
             </div>
 
             { showModalAceptGame ? 

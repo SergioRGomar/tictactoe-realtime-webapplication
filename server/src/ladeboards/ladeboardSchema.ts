@@ -16,5 +16,9 @@ export const ladeboardSchema = new Schema({
     defeats:{
         type:Number,
         required:true
+    },
+    username:{
+        type:String,
+        required:true
     }
 },{versionKey:false})

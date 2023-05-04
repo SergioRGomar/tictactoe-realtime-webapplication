@@ -105,7 +105,7 @@ export const saveVictory = async (player:any)=>{
             victories  = currentLadeboard[0].victories+1
             await ladeboardModel.updateOne({_id:currentLadeboard[0]._id},{victories:victories})
         }else{
-            await ladeboardModel.create({user_id:player._id,draws:0,victories:1,defeats:0})
+            await ladeboardModel.create({user_id:player._id,draws:0,victories:1,defeats:0,username:player.email})
         }
         await userModel.updateOne({_id:player._id},{victories:victories})
     }
@@ -122,7 +122,7 @@ export const saveDefeat = async (player:any)=>{
             defeats  = currentLadeboard[0].defeats+1
             await ladeboardModel.updateOne({_id:currentLadeboard[0]._id},{defeats:defeats})
         }else{
-             await ladeboardModel.create({user_id:player._id,draws:0,victories:0,defeats:1})
+             await ladeboardModel.create({user_id:player._id,draws:0,victories:0,defeats:1,username:player.email})
         }
         await userModel.updateOne({_id:player._id},{defeats:defeats})
     }
@@ -140,7 +140,7 @@ export const saveDraw = async (player:any)=>{
             draws  = currentLadeboard[0].draws+1
             await ladeboardModel.updateOne({_id:currentLadeboard[0]._id},{draws:draws})
         }else{
-             await ladeboardModel.create({user_id:player._id,draws:1,victories:0,defeats:0})
+             await ladeboardModel.create({user_id:player._id,draws:1,victories:0,defeats:0,username:player.email})
         }
         await userModel.updateOne({_id:player._id},{draws:draws})
     }
