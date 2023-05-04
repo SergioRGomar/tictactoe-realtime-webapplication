@@ -41,12 +41,10 @@ export const getUsersToPair = async()=>{
         if(currentUsers.length >= 2){
             const user_1 = currentUsers[0]
             const user_2 = currentUsers[1]
-
-
             await userModel.updateOne({_id:user_1._id}, {status:"decidingToPlay"})
             await userModel.updateOne({_id:user_2._id}, {status:"decidingToPlay"})
-
-            return {usersToPair:{user_1:user_1,user_2:user_2}}
+            console.log("users finded")
+            return {usersToPair:[user_1,user_2]}
         }else{
             return {error:"no users available to play"}
         }

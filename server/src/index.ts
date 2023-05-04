@@ -3,46 +3,36 @@ import express from 'express'
 import { createServer } from "http";
 import { Server } from "socket.io";
 
-
-//User dependences
 import { startdbConnection, updateUserStatus, getUsersToPair} from "./database"
-import {userRouter} from './users/userRouter'
-const app = express();
-const server = createServer(app);
+import { userRouter } from './users/userRouter'
 
-const io = new Server(server, {  cors: { origin: "*",}});
+const app = express()
+const server = createServer(app)
 
-import {config} from 'dotenv';
-
-//init a enviromental variables
+import { config } from 'dotenv';
 config();
 //const PORT = process.env.PORT;
 //const URL_MONGO = process.env.URL_MONGO;
 
-const database = "tictactoe"
-
-//cors
 const allowedOrigins = ['http://localhost:3000'];
-
-const options: cors.CorsOptions = {
-  origin: allowedOrigins
-};
+const options: cors.CorsOptions = { origin: allowedOrigins }
 
 app.use(cors(options));
-
 app.use(express.json())
 app.use('/users',userRouter)
 
-let pairingProcess:Function = ()=>{}
-
+const database = "tictactoe"
 startdbConnection(URL_MONGO,database).then(()=>{
  
   server.listen(PORT,()=>{
     console.log("Server listen on port 3001")
     
-    //esto se ejecuta por cada soquet 
+    let pairingProcess:Function = ()=>{}
+    const io = new Server(server, {  cors: { origin: "*",}})
+
     io.on('connection', (socket:any) => {
       
+      //user is disconnected
       socket.on('disconnect', () => {
         updateUserStatus("",socket.id,"offline")
           .then((response)=>{
@@ -50,6 +40,7 @@ startdbConnection(URL_MONGO,database).then(()=>{
         })
       });
 
+      //user is login
       socket.on("newUserOnline", (user_id:string) => {
         updateUserStatus(user_id,socket.id,"online")
           .then((response)=>{
@@ -57,33 +48,41 @@ startdbConnection(URL_MONGO,database).then(()=>{
         })
       });
 
-      socket.on("searchingGame",(user_id:string)=>{
+      //user is ready to play
+      socket.on("searchGame",(user_id:string)=>{
         updateUserStatus(user_id,socket.id,"searchingGame")
           .then((response)=>{
             console.log(response.message)
           })
       })
-
-      pairingProcess = (users:Array<any>)=>{
-        console.log(users)
-       // socket.emit("initGame",users)
+      
+    })
+    
+    //Function to notify users of a new game and send object with the init game
+    pairingProcess = async (users:any)=>{
+      const objGame = {
+        board:[null,null,null,null,null,null,null,null],
+        turn:false,
+        player:false,
+        //enemy:user
       }
 
-    })
+      io.to(users[0].socket_id).to(users[1].socket_id).emit("initGame",`GAME FINDEND`)
+    }
 
-    const pairingInteligence = ()=>{
+    //Algorithm of pairing 
+    const pairingIntelligence = ()=>{
       getUsersToPair().then((response:any)=>{
         if(response.error){
           console.log(response.error)
         }else{
-          //call to pairing process to make emits to users.
           pairingProcess(response.usersToPair)
         }
-        setTimeout(pairingInteligence,500)
+        setTimeout(pairingIntelligence,1000)
       })
     }
-    pairingInteligence()
-
+    pairingIntelligence()
+    
   })
 
 })
