@@ -19,16 +19,20 @@ export const userSchema = new Schema({
     },
     draws:{
         type:Number,
-        require:false
+        required:false
     },
     total_games:{
         type:Number,
-        require:false
+        required:false
     },
     status:{
         type:String,
         required:true
-    },    
+    },   
+    socket_id:{
+        type:String,
+        required:false
+    },
     },
     {
         versionKey:false

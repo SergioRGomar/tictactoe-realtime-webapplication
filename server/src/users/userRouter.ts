@@ -15,7 +15,6 @@ userRouter.get("/",async (req,res) =>{
     }else{
         res.status(200).send({message:"ok",user:currentUser[0]})
     }
-
 })
 
 
@@ -38,6 +37,7 @@ userRouter.post("/",async (req,res) =>{
                 req.body.defeats = 0
                 req.body.draws = 0
                 req.body.total_games = 0
+                req.body.socket_id = ""
                 req.body.password = encryptedPasword
                 const createdUser = await userModel.create(req.body)
                 res.status(200).send({message:"user created successfully"})
