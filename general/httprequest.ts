@@ -18,3 +18,19 @@ export const getUser = async (user_id:string) => {
     }
 }
 
+export const getLadeboard = async() =>{
+    try{
+        const response = await fetch(`${urlUsersApi}?ladeboard=string`,{ 
+            method: "GET", 
+            headers: {
+                "Content-Type": "application/json",
+            }  
+        })
+        const result = (await response.json());
+        return result;
+    }
+    catch{
+        return "error getting ladeboard"
+    }
+}
+

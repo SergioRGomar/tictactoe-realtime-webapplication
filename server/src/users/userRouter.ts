@@ -1,20 +1,28 @@
 import {Router} from 'express'
 import { userModel } from './userModel'
+import { ladeboardModel } from '../ladeboards/ladeboardModel'
+
 import bcrypt from 'bcryptjs'
 
 export const userRouter = Router()
 
-
 userRouter.get("/",async (req,res) =>{
     let user_id = req.query.user_id;
+    let ladeboard = req.query.ladeboard;
 
-    let match = {_id:user_id};
-    const currentUser = await userModel.find(match, 'email victories defeats draws total_games status');
-    if(currentUser.length === 0){
-        res.status(200).send({error:"this user id is not exist"})
+    if(ladeboard){
+        const result = await ladeboardModel.find().sort({victories:-1})
+        res.status(200).send({users:result})// {ladeboard:ladeboard}
     }else{
-        res.status(200).send({message:"ok",user:currentUser[0]})
+        let match = {_id:user_id};
+        const currentUser = await userModel.find(match, 'email victories defeats draws total_games status');
+        if(currentUser.length === 0){
+            res.status(200).send({error:"this user id is not exist"})
+        }else{
+            res.status(200).send({message:"ok",user:currentUser[0]})
+        }
     }
+
 })
 
 

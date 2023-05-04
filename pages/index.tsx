@@ -1,5 +1,3 @@
-
-
 import React from "react"
 import { useEffect, useState } from "react"
 import { io } from 'socket.io-client'
@@ -13,6 +11,7 @@ import { getUser } from "../general/httprequest"
 import { calculateWinner } from "@/general/game"
 
 import '@/styles/modal.module.css'
+import Ladeboard from "@/components/Ladeboard"
 
 const socket = io('http://localhost:3001')
 
@@ -102,7 +101,6 @@ export default function Home(){
     socket.on("initGame",(objGame)=>{
       setIsLoading(false)
       setGameState(objGame)
-      console.log(objGame)
       if(objGame.player_1._id === getCookie('user_id_tictactoe')){
         setCurrentPlayerIcon("O")
       }else{
@@ -163,7 +161,7 @@ export default function Home(){
         }
 
       }else{
-        console.log("is not you turn")
+        alert("is not you turn")
       }
     }
 
@@ -202,16 +200,12 @@ export default function Home(){
             <div className="w-3/12 bg-red-300 Lobby float-left">
               <div className="flex flex-col	">
                 <h1>My statics</h1>
-                <span>Email: {userData.email}</span>
-                <span>Games: {userData.total_games}</span>
-
+                <span>Username: {userData.email}</span>
                 <span>Victories: {userData.victories}</span>
                 <span>Defeats: {userData.defeats}</span>
                 <span>Draws: {userData.draws}</span>
               </div>
-              <div>
-                Online players
-              </div>
+              <Ladeboard />
             </div>
             <div className="w-9/12 bg-pink-200 p-4 float-left flex flex-col items-center">
               
