@@ -1,18 +1,18 @@
 import { useState } from "react";
 import Cell from "./Cell";
 
-const cell_style_0 = "m-1 text-4xl font-sigmar_ font-black w-14 h-14 rounded-lg flex items-center justify-center bg-white shadow-lg"
-const cell_style_1 = "text-red-500"
-const cell_style_2 = "text-blue-500"
+const cell_style_default = "m-1 text-4xl font-sigmar_ font-black w-14 h-14 rounded-lg flex items-center justify-center bg-white shadow-lg"
+const cell_style_player_1 = "text-red-500"
+const cell_style_player_2 = "text-blue-500"
 
 const cell_style_winner = "text-green-600 m-1 text-4xl font-sigmar_ font-black w-14 h-14 rounded-lg flex items-center justify-center bg-white shadow-lg"
 
 let winArray = [0,0,0]
 
-export default function Board(){
+export default function Board(props:any){
 
-    const [cells, setCells] = useState(Array(9).fill(null))
-    const [cellStyles, setCellStyles] = useState(Array(9).fill(cell_style_0))
+    const [cells, setCells] = useState(props.board)
+    const [cellStyles, setCellStyles] = useState(Array(9).fill(cell_style_default))
 
     //true:x-false:o
     const [playerTurn, setPlayerTurn] = useState(true)
@@ -36,12 +36,12 @@ export default function Board(){
             setMovements(movements+1)
             if(playerTurn){
                 newCells[i] = 'X'
-                newCellStyles[i] += " "+cell_style_1
+                newCellStyles[i] += " "+cell_style_player_1
                 setLabelGameStatus("Turn of player O")
             }
             else{
                 newCells[i] = 'O'
-                newCellStyles[i] += " "+cell_style_2
+                newCellStyles[i] += " "+cell_style_player_2
                 setLabelGameStatus("Turn of player X")
             }
             setCellStyles(newCellStyles)
@@ -74,32 +74,33 @@ export default function Board(){
         }            
     }
 
+    
+
     return(
         <>
             <div className=" bg-amber-700">
                 <div className="bg-red-300 flex flex-col items-center	">
                     <h1>TIC TAC TOE GAME</h1>
-                    <h1>You are the player O</h1>
+                    <h1>You are the player {props.player}</h1>
                 </div>
                 <div className="board-row flex flex-row justify-center">
                     <span className="w-full text-center	">{labelGameStatus}</span>
                 </div>
                 <div className="board-row flex flex-row justify-center">
-                    <Cell cellStyle={cellStyles[0]} value={cells[0]} onCellClick={() => handleCellClick(0)} />
-                    <Cell cellStyle={cellStyles[1]} value={cells[1]} onCellClick={() => handleCellClick(1)}/>
-                    <Cell cellStyle={cellStyles[2]} value={cells[2]} onCellClick={() => handleCellClick(2)}/>
+                    <Cell cellStyle={cellStyles[0]} value={props.boardState[0]} onCellClick={() => props.onCellClick(0)} />
+                    <Cell cellStyle={cellStyles[1]} value={props.boardState[1]} onCellClick={() => props.onCellClick(1)}/>
+                    <Cell cellStyle={cellStyles[2]} value={props.boardState[2]} onCellClick={() => props.onCellClick(2)}/>
                 </div>
                 <div className="board-row flex flex-row justify-center">
-                    <Cell cellStyle={cellStyles[3]} value={cells[3]} onCellClick={() => handleCellClick(3)}/>
-                    <Cell cellStyle={cellStyles[4]} value={cells[4]} onCellClick={() => handleCellClick(4)}/>
-                    <Cell cellStyle={cellStyles[5]} value={cells[5]} onCellClick={() => handleCellClick(5)}/>
+                    <Cell cellStyle={cellStyles[3]} value={props.boardState[3]} onCellClick={() => props.onCellClick(3)}/>
+                    <Cell cellStyle={cellStyles[4]} value={props.boardState[4]} onCellClick={() => props.onCellClick(4)}/>
+                    <Cell cellStyle={cellStyles[5]} value={props.boardState[5]} onCellClick={() => props.onCellClick(5)}/>
                 </div>
                 <div className="board-row flex flex-row justify-center">
-                    <Cell cellStyle={cellStyles[6]} value={cells[6]} onCellClick={() => handleCellClick(6)}/>
-                    <Cell cellStyle={cellStyles[7]} value={cells[7]} onCellClick={() => handleCellClick(7)}/>
-                    <Cell cellStyle={cellStyles[8]} value={cells[8]} onCellClick={() => handleCellClick(8)}/>
+                    <Cell cellStyle={cellStyles[6]} value={props.boardState[6]} onCellClick={() => props.onCellClick(6)}/>
+                    <Cell cellStyle={cellStyles[7]} value={props.boardState[7]} onCellClick={() => props.onCellClick(7)}/>
+                    <Cell cellStyle={cellStyles[8]} value={props.boardState[8]} onCellClick={() => props.onCellClick(8)}/>
                 </div>
-               
             
             </div>
         </>
