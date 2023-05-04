@@ -35,25 +35,23 @@ export const updateUserStatus = async (user_id:string,socket_id:string,status:st
     }
 }
 
-export const searchPlayerToGame = async(user_id:any)=>{
-
+export const getUsersToPair = async()=>{
     try{
-        const usersSearchingAGame = await userModel.find({status:"searchingGame",_id:{'$ne':user_id}})
+        const currentUsers =  await userModel.find({status:"searchingGame"}, "email socket_id")
+        if(currentUsers.length >= 2){
+            const user_1 = currentUsers[0]
+            const user_2 = currentUsers[1]
 
-        console.log(usersSearchingAGame)
-       // console.log(usersSearchingAGame)
-        if(usersSearchingAGame.length === 0)
-            return {status:false,user_id:user_id}
-        else{
-            //Seleccionamos uno y le mandamos datos de ese user
-            //Cambiamos el estado del otro usuario y el mio a "matching" para evitar mas solicitudes de juego 
 
-            return {status:true,user_id:user_id}
+            await userModel.updateOne({_id:user_1._id}, {status:"decidingToPlay"})
+            await userModel.updateOne({_id:user_2._id}, {status:"decidingToPlay"})
+
+            return {usersToPair:{user_1:user_1,user_2:user_2}}
+        }else{
+            return {error:"no users available to play"}
         }
-
-        //return {message:`user whit socket ${socket_id} and id ${user_id} is now ${status}`}
     }catch{
-        //return {error:"an uspected error as ocurred"}
+        return {error:"an uspected error as ocurred"}
     }
 }
 

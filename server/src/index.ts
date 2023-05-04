@@ -5,7 +5,7 @@ import { Server } from "socket.io";
 
 
 //User dependences
-import { startdbConnection, updateUserStatus, searchPlayerToGame} from "./database"
+import { startdbConnection, updateUserStatus, getUsersToPair} from "./database"
 import {userRouter} from './users/userRouter'
 const app = express();
 const server = createServer(app);
@@ -18,7 +18,6 @@ import {config} from 'dotenv';
 config();
 //const PORT = process.env.PORT;
 //const URL_MONGO = process.env.URL_MONGO;
-
 
 const database = "tictactoe"
 
@@ -65,19 +64,25 @@ startdbConnection(URL_MONGO,database).then(()=>{
           })
       })
 
-      pairingProcess = (value:string)=>{
-        console.log(value)
-        socket.emit("pairingProcess",value)
+      pairingProcess = (users:Array<any>)=>{
+        console.log(users)
+       // socket.emit("initGame",users)
       }
-
-      //algoritm to pairing inteligence
 
     })
 
-    /*const pairingInteligence = ()=>{
-      setTimeout(pairingInteligence,500)
+    const pairingInteligence = ()=>{
+      getUsersToPair().then((response:any)=>{
+        if(response.error){
+          console.log(response.error)
+        }else{
+          //call to pairing process to make emits to users.
+          pairingProcess(response.usersToPair)
+        }
+        setTimeout(pairingInteligence,500)
+      })
     }
-    pairingInteligence()*/
+    pairingInteligence()
 
   })
 
