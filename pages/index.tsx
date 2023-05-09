@@ -12,6 +12,8 @@ import { calculateWinner } from "@/general/game"
 
 import '@/styles/modal.module.css'
 import Ladeboard from "@/components/Ladeboard"
+import UserData from "@/components/UserData"
+import Navbar from "@/components/Navbar"
 
 const socket = io('http://localhost:3001')
 
@@ -72,11 +74,10 @@ export default function Home(){
 
     const [showModalAceptGame, setShowModalAceptGame] = useState(false)
     const [showModalBottons, setShowModalBottons] = useState("")
-    const [showBoardGame, setShowBoardGame] = useState(false)
+    const [showBoardGame, setShowBoardGame] = useState(true)
     const [isLoading, setIsLoading] = useState(false)
 
     const [labelTurn, setLabelTurn] = useState("")
-
 
 
     useEffect(() => {
@@ -230,25 +231,11 @@ export default function Home(){
       socket.emit('acceptGame', gameState, userData)
     }
     return(
-        <main className="bg-amber-300">
-            <div className="w-3/12 bg-violet-900 Lobby float-left">
-              <div className="flex flex-col	items-left">
-                <div className="flex flex-col	items-center pt-5">
-                  <h1 className="text-2xl p-2 text-white font-bold">My statistics</h1>
-                </div>
-                <div className="text-m text-green-400 flex flex-col items-center pb-3">
-                  <span><b className="font-black text-white">Username:</b> {userData.email}</span>
-                  <span><b className="font-black text-white">Victories:</b> {userData.victories}</span>
-                  <span><b className="font-black text-white">Defeats:</b> {userData.defeats}</span>
-                  <span><b className="font-black text-white">Draws:</b> {userData.draws}</span>
-                </div>
-              </div>
-              <Ladeboard />
-            </div>
-            
+        <main>
 
-            <div className="w-9/12 bg-amber-100 p-4 float-left flex flex-col items-center">
-              
+            <Navbar/>
+
+            <div className="w-8/12 bg-zinc-700 p-4 float-left items-center">
              { showBoardGame ? 
 
                 <Board 
@@ -259,8 +246,17 @@ export default function Home(){
                 />
                 :undefined }
 
-                <button onClick={clickSearchGame} className="m-8 w-4/12 bg-amber-300 hover:bg-amber-500 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">Find a game</button>
+              <button onClick={clickSearchGame} className="m-8 w-4/12 bg-amber-300 hover:bg-amber-500 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">Find a game</button>
             </div>
+
+            <div className="w-2/12 p-4 float-left ">
+              
+            </div>
+
+
+
+
+
 
             { showModalAceptGame ? 
             <ModalConfirmGame
@@ -271,7 +267,6 @@ export default function Home(){
               showBotons={showModalBottons}
             />
             : undefined } 
-
 
             { isLoading ? <ModalLoader /> : undefined } 
               

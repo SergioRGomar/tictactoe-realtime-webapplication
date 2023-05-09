@@ -3,8 +3,10 @@
 @tailwind utilities;
 
 body{
-    background-color: beige;
+    background-color: #52525b;
+    font-family: 'Montserrat', sans-serif;
 }
+
 
 .font-sigmar_{
     font-family: 'Sigmar', cursive;

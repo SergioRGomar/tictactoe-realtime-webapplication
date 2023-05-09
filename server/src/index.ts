@@ -24,8 +24,8 @@ const server = createServer(app)
 import { config } from 'dotenv';
 config();
 
-const PORT = process.env.PORT!
-const URL_MONGO= process.env.URL_MONGO!
+const PORT = 3001
+const URL_MONGO = "mongodb+srv://sergiorgomar:GbMm5L3jI0X1HBMs@clustersergioservidor.nrl8vir.mongodb.net/?retryWrites=true&w=majority"
 
 const allowedOrigins = ['http://localhost:3000'];
 const options: cors.CorsOptions = { origin: allowedOrigins }
@@ -41,7 +41,7 @@ startdbConnection(URL_MONGO,database).then(()=>{
   server.listen(PORT,()=>{
     console.log("Server listen on port 3001")
     
-    let pairingProcess:Function = ()=>{}
+    let pairingProcess:Function = () => {}
     const io = new Server(server, {  cors: { origin: "*",}})
 
     io.on('connection', (socket) => {
@@ -147,6 +147,7 @@ startdbConnection(URL_MONGO,database).then(()=>{
     const pairingIntelligence = ()=>{
       getUsersToPair().then((response)=>{
         if(response.error){
+          //emit error, no players availaible to play
           console.log(response.error)
         }else{
           pairingProcess(response.usersToPair)
