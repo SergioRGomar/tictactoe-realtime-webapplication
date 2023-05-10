@@ -18,14 +18,16 @@ export default function Board(props:boardProps){
 
     return(
         <>
-            <div className="bg-cyan-100 w-full p-10">
-                <div className="bg-black text-white flex flex-col items-center	">
-                    <h1 className="text-3xl">TIC TAC TOE GAME</h1>
+            <div className="bg-zinc-900 w-full p-4">
+                
+                <div className="flex flex-col text-white items-center">
                     <h1 className="text-green-400">You are the player {props.player}</h1>
                 </div>
-                <div className="board-row flex flex-row justify-center">
-                    <span className="m-4 font-black w-full text-center	text-2xl">{props.labelGameStatus}</span>
+
+                <div className="flex flex-col text-white items-center">
+                    <span className="w-full m-4 font-black w-full text-center text-2xl">{props.labelGameStatus}</span>
                 </div>
+
                 <div className="board-row flex flex-row justify-center">
                     <Cell cellStyle={cellStyles[0]} value={props.boardState[0]} onCellClick={() => props.onCellClick(0)} />
                     <Cell cellStyle={cellStyles[1]} value={props.boardState[1]} onCellClick={() => props.onCellClick(1)}/>

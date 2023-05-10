@@ -11,8 +11,6 @@ import { getUser } from "../general/httprequest"
 import { calculateWinner } from "@/general/game"
 
 import '@/styles/modal.module.css'
-import Ladeboard from "@/components/Ladeboard"
-import UserData from "@/components/UserData"
 import Navbar from "@/components/Navbar"
 
 const socket = io('http://localhost:3001')
@@ -231,32 +229,35 @@ export default function Home(){
       socket.emit('acceptGame', gameState, userData)
     }
     return(
-        <main>
+        <>          
+          <Navbar/>
+         
 
-            <Navbar/>
-
-            <div className="w-8/12 bg-zinc-700 p-4 float-left items-center">
-             { showBoardGame ? 
-
-                <Board 
-                  player={currentPlayerIcon}
-                  boardState={gameState.board}
-                  labelGameStatus={labelTurn}
-                  onCellClick={handleCellClick} 
-                />
-                :undefined }
-
-              <button onClick={clickSearchGame} className="m-8 w-4/12 bg-amber-300 hover:bg-amber-500 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">Find a game</button>
-            </div>
-
-            <div className="w-2/12 p-4 float-left ">
+          <div className="float-left w-full mt-3 ">
+            <div className="w-full flex flex-col items-center">
               
+              <div className="sm:w-10/12 md:w-8/12 lg:w-7/12 xl:w-5/12 2xl:w-4/12 w-10/12 text-white flex flex-col items-center	p-5 m-3 hover:bg-green-200 hover:text-black">
+                <h1 className="text-3xl">TIC TAC TOE GAME</h1>
+              </div>
+              
+              <div className="sm:w-10/12 md:w-8/12 lg:w-7/12 xl:w-5/12 2xl:w-4/12 w-10/12 bg-zinc-800 p-4 float-left items-center rounded-3xl p-5 ">
+
+                { showBoardGame ? 
+                  <Board 
+                    player={currentPlayerIcon}
+                    boardState={gameState.board}
+                    labelGameStatus={labelTurn}
+                    onCellClick={handleCellClick} 
+                  />
+                  : undefined }
+
+              
+              </div>
+
+              <button onClick={clickSearchGame} className="m-8 w-4/12 bg-green-300 hover:bg-green-500 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">Find a game</button>
+
             </div>
-
-
-
-
-
+          </div>
 
             { showModalAceptGame ? 
             <ModalConfirmGame
@@ -270,7 +271,7 @@ export default function Home(){
 
             { isLoading ? <ModalLoader /> : undefined } 
               
-        </main>
-    )
+        </>
+        )
 }
 

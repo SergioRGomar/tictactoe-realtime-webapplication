@@ -29,7 +29,7 @@ export default function UserData(){
     useEffect(() => {
         const user_id = getCookie('user_id_tictactoe')
         if(!user_id){
-            window.alert("You need to have an account to see this")
+            window.alert("You need to have an account to see this. Please login or create a new account. Redirecting...")
             window.location.href = "login"
         }else{
           getUser(user_id).then((response)=>{

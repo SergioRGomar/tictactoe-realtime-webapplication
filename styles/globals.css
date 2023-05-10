@@ -2,11 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+html{
+    height: 100%;
+}
 body{
-    background-color: #52525b;
+    background-color: #374151;
     font-family: 'Montserrat', sans-serif;
+    height: 100%;
+    overflow: auto;
 }
 
+#__next{
+    height: 100%;
+}
 
 .font-sigmar_{
     font-family: 'Sigmar', cursive;
