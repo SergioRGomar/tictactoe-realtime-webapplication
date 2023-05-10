@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getCookie } from "@/general/generalfunctions";
 import { getUser } from "../general/httprequest"
+import WarningNavBar from "./WarningNavBar";
 
 type objUserData = {
     _id:string,
@@ -25,23 +26,24 @@ const initUserData:objUserData = {
 export default function UserData(){
 
     const [currentUser, setCurrentUser] = useState(initUserData)
-
+    const [isUserLogged, setIsUserLogged] = useState(false)
+    
     useEffect(() => {
         const user_id = getCookie('user_id_tictactoe')
-        if(!user_id){
-            window.alert("You need to have an account to see this. Please login or create a new account. Redirecting...")
-            window.location.href = "login"
-        }else{
-          getUser(user_id).then((response)=>{
-            setCurrentUser(response.user)
-            //socket.emit('newUserOnline', response.user._id)
-          })
+        if(user_id){
+            setIsUserLogged(true)
+            getUser(user_id).then((response)=>{
+                setCurrentUser(response.user)
+                //socket.emit('newUserOnline', response.user._id)
+            })
         }
                 
     }, []);
 
     return(
+       
         <div className="float-left w-full">
+             { isUserLogged ? 
             <div className="flex flex-col items-center m-5"> 
                 <div className="sm:w-10/12 md:w-8/12 lg:w-7/12 xl:w-5/12 2xl:w-4/12 w-10/12 flex flex-col items-center bg-zinc-800  rounded-3xl p-5">
                     <div className="flex flex-col items-center text-green-500 text-5xl">
@@ -58,7 +60,9 @@ export default function UserData(){
                     </div>
                 </div>
             </div>
+             : <WarningNavBar/>}
         </div>
+       
     )
 
 }

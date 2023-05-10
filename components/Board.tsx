@@ -18,8 +18,12 @@ export default function Board(props:boardProps){
 
     return(
         <>
-            <div className="bg-zinc-900 w-full p-4">
+            <div className="bg-zinc-900 w-full p-5">
                 
+                {/*<div className="flex flex-row items-center text-white m-2">
+                    <div className="p-3 text-center bg-zinc-800  hover:bg-zinc-800">1:00</div>
+                </div>*/}
+
                 <div className="flex flex-col text-white items-center">
                     <h1 className="text-green-400">You are the player {props.player}</h1>
                 </div>
@@ -43,7 +47,7 @@ export default function Board(props:boardProps){
                     <Cell cellStyle={cellStyles[7]} value={props.boardState[7]} onCellClick={() => props.onCellClick(7)}/>
                     <Cell cellStyle={cellStyles[8]} value={props.boardState[8]} onCellClick={() => props.onCellClick(8)}/>
                 </div>
-            
+                
             </div>
         </>
     )

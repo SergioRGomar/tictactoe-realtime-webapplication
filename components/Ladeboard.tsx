@@ -29,10 +29,9 @@ export default function Ladeboard(){
                         <h1 className="text-2xl p-2 text-white font-bold">Top 10 best players</h1>
                     </div>
 
-                    <div className="text-m text-green-400 flex flex-col items-center pb-3">
-                        
+                    <div className="text-m text-amber-400 flex flex-col items-center pb-3">
                         { users.map((user) =>
-                            <span key={user._id}><b className="font-black text-white"></b> {user.username} <b className="font-black text-white"> have </b> {user.victories} <b className="font-black text-white"> victories </b> </span>
+                            <span key={user._id}><b className="font-black text-white">{user.username} have </b> {user.victories} <b className="font-black text-white"> victories </b> </span>
                         )
                         }
                     </div>

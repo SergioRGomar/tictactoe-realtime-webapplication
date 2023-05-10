@@ -12,6 +12,7 @@ import { calculateWinner } from "@/general/game"
 
 import '@/styles/modal.module.css'
 import Navbar from "@/components/Navbar"
+import WarningNavBar from "@/components/WarningNavBar"
 
 const socket = io('http://localhost:3001')
 
@@ -78,11 +79,13 @@ export default function Home(){
     const [labelTurn, setLabelTurn] = useState("")
 
 
+    const [isUserLogged, setIsUserLogged] = useState(false)
+
+
     useEffect(() => {
       const user_id = getCookie('user_id_tictactoe')
-      if(!user_id){
-          window.location.href = "login"
-      }else{
+      if(user_id){
+        setIsUserLogged(true)
         getUser(user_id).then((response)=>{
           setUserData(response.user)
           socket.emit('newUserOnline', response.user._id)
@@ -92,14 +95,14 @@ export default function Home(){
     }, []);
 
 
-    //If paring is find a game
+    //Si el emparejamiento encontro un juego
     socket.on("startGame",()=>{
       setShowModalAceptGame(false)
       setShowBoardGame(true)
       //change game status to "playing in mongodb"
     })
 
-    //if the pairing is susseful 
+    //Si el emparajuemto fue satifactorio
     socket.on("initGame",(objGame)=>{
       setIsLoading(false)
       setGameState(objGame)
@@ -216,6 +219,10 @@ export default function Home(){
     function clickSearchGame(){
       setIsLoading(true)
       socket.emit('searchGame', userData._id)
+      setTimeout(()=>{
+        alert("Game not found, no players online, try again later");
+        setIsLoading(false)
+      },10000)
     }
 
     //user reject the game
@@ -231,12 +238,14 @@ export default function Home(){
     return(
         <>          
           <Navbar/>
-         
+
+          {isUserLogged ?
+
 
           <div className="float-left w-full mt-3 ">
             <div className="w-full flex flex-col items-center">
               
-              <div className="sm:w-10/12 md:w-8/12 lg:w-7/12 xl:w-5/12 2xl:w-4/12 w-10/12 text-white flex flex-col items-center	p-5 m-3 hover:bg-green-200 hover:text-black">
+              <div className="sm:w-10/12 md:w-8/12 lg:w-7/12 xl:w-5/12 2xl:w-4/12 w-10/12 text-white flex flex-col items-center	p-5 m-3 hover:bg-amber-200 hover:text-black">
                 <h1 className="text-3xl">TIC TAC TOE GAME</h1>
               </div>
               
@@ -254,10 +263,11 @@ export default function Home(){
               
               </div>
 
-              <button onClick={clickSearchGame} className="m-8 w-4/12 bg-green-300 hover:bg-green-500 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">Find a game</button>
+              <button onClick={clickSearchGame} className="m-8 w-4/12 bg-amber-300 hover:bg-amber-500 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">Find a game</button>
 
             </div>
           </div>
+        : <WarningNavBar/>  }
 
             { showModalAceptGame ? 
             <ModalConfirmGame
