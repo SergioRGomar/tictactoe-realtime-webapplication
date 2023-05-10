@@ -18,14 +18,10 @@ import { Server } from "socket.io";
 import { startdbConnection, updateUserStatus, getUsersToPair, createNewGameRoom, updateGameStatus, getGameStatus, updateGame, saveVictory, saveDefeat, saveDraw } from "./database"
 import { userRouter } from './users/userRouter'
 
+import {PORT, URL_MONGO, DATABASE} from '../env'
+
 const app = express()
 const server = createServer(app)
-
-import { config } from 'dotenv';
-config();
-
-const PORT = 3001
-const URL_MONGO = "mongodb+srv://sergiorgomar:GbMm5L3jI0X1HBMs@clustersergioservidor.nrl8vir.mongodb.net/?retryWrites=true&w=majority"
 
 const allowedOrigins = ['http://localhost:3000'];
 const options: cors.CorsOptions = { origin: allowedOrigins }
@@ -34,9 +30,7 @@ app.use(cors(options));
 app.use(express.json())
 app.use('/users',userRouter)
 
-
-const database = "tictactoe"
-startdbConnection(URL_MONGO,database).then(()=>{
+startdbConnection(URL_MONGO!, DATABASE!).then(()=>{
  
   server.listen(PORT,()=>{
     console.log("Server listen on port 3001")
