@@ -1,3 +1,5 @@
+const allowedOrigins = ['http://localhost:3000'];
+
 type typeObjGame = {
   board: Array<any>,
   player_1:object,
@@ -20,10 +22,10 @@ import { userRouter } from './users/userRouter'
 
 import {PORT, URL_MONGO, DATABASE} from '../env'
 
+
 const app = express()
 const server = createServer(app)
 
-const allowedOrigins = ['http://localhost:3000'];
 const options: cors.CorsOptions = { origin: allowedOrigins }
 
 app.use(cors(options));

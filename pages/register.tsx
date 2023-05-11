@@ -1,4 +1,6 @@
 import { useState } from "react"
+import {urlUsersApi} from "../general/httprequest"
+
 
 export default function Register(){
 
@@ -32,7 +34,7 @@ export default function Register(){
             alert("the passwords are not match")
             return
         }
-        fetch(`http://localhost:3001/users`,
+        fetch(urlUsersApi,
         { 
           method: "POST", 
           headers: {

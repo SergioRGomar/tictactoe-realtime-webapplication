@@ -14,8 +14,9 @@ import '@/styles/modal.module.css'
 import Navbar from "@/components/Navbar"
 import WarningNavBar from "@/components/WarningNavBar"
 import Script from "next/script"
+import {socketURL} from "../general/httprequest"
 
-const socket = io('http://localhost:3002')
+const socket = io(socketURL)
 
 const initUserData:objUserData = {
   _id:"",
@@ -262,7 +263,7 @@ export default function Home(){
           <div className="float-left w-full mt-3 ">
             <div className="w-full flex flex-col items-center">
               
-              <div className="sm:w-10/12 md:w-8/12 lg:w-7/12 xl:w-5/12 2xl:w-4/12 w-10/12 text-white flex flex-col items-center	p-5 m-3 bg-zinc-800 ">
+              <div className="sm:w-10/12 md:w-8/12 lg:w-7/12 xl:w-5/12 2xl:w-4/12 w-10/12 text-center text-white flex flex-col items-center	p-5 m-3 bg-zinc-800 ">
                 <h1 className="text-3xl"> TIC TAC TOE GAME </h1>
               </div>
               
@@ -281,7 +282,7 @@ export default function Home(){
               
               </div>
 
-              <button onClick={clickSearchGame} className="sm:w-8/12 md:w-6/12 lg:w-4/12 xl:w-4/12 2xl:w-4/12 w-6/12 m-8 bg-zinc-700 hover:bg-zinc-900 text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow">Find a game</button>
+              <button onClick={clickSearchGame} className="max-[400px]:w-8/12 sm:w-8/12 md:w-6/12 lg:w-4/12 xl:w-4/12 2xl:w-4/12 w-6/12 m-8 bg-zinc-700 hover:bg-zinc-900 text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow">Find a game</button>
 
             </div>
           </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import {urlUsersApi} from "../general/httprequest"
 
 export default function Login(){
     
@@ -25,7 +26,7 @@ export default function Login(){
         }
 
         console.log(values)
-        fetch(`http://localhost:3001/users`,
+        fetch(urlUsersApi,
         { 
           method: "POST", 
           headers: {
