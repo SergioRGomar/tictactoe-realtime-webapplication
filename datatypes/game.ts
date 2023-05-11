@@ -6,6 +6,19 @@ type objGame =  {
     turn:string,
     status:string,
     date:object,
-    movements:number
+    movements:number,
+    winner:object,
+    result:string
 }
 
+type objUserData = {
+    _id:string,
+    email:string,
+    victories:number,
+    defeats:number, 
+    draws:number,
+    total_games:number,
+    status:string
+  }
+  
+ 

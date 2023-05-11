@@ -33,88 +33,84 @@ app.use('/users',userRouter)
 startdbConnection(URL_MONGO!, DATABASE!).then(()=>{
  
   server.listen(PORT,()=>{
-    console.log("Server listen on port 3001")
+    console.log(`Server listen on port ${PORT}`)
     
     let pairingProcess:Function = () => {}
     const io = new Server(server, {  cors: { origin: "*",}})
 
-    io.on('connection', (socket) => {
+    io.on('connection', socket => {
       
+     
       //user is disconnected
       socket.on('disconnect', () => {
         updateUserStatus("",socket.id,"offline")
-          .then((response)=>{
-            console.log(response.message)
-        })
+        .then(response=> console.log(response.message))
       });
 
-      //user is login
+        //user is login
       socket.on("newUserOnline", (user_id:string) => {
         updateUserStatus(user_id,socket.id,"online")
-          .then((response)=>{
-            console.log(response.message)
-        })
+          .then(response=> console.log(response.message))
       });
 
-      //user is ready to play
-      socket.on("searchGame",(user_id:string)=>{
-        updateUserStatus(user_id,socket.id,"searchingGame")
-          .then((response)=>{
-            console.log(response.message)
-          })
+
+      //user is searching a game
+    socket.on("searchGame",(user_id:string)=>{
+      updateUserStatus(user_id,socket.id,"searchingGame")
+        .then(response=> console.log(response.message))
+    })
+
+    //user decline a game
+    socket.on("declineGame",(objGame,userData)=>{
+      updateUserStatus(userData._id,socket.id,"online")
+        .then(()=>{
+          if(objGame.player_1._id === userData._id)
+            socket.to(objGame.player_2.socket_id).emit("gameDeclinedByEnemy")
+          else
+            socket.to(objGame.player_1.socket_id).emit("gameDeclinedByEnemy")
+          
+          updateGameStatus(objGame._id,"rejected")
+        })
+    })
+
+    socket.on("acceptGame",(objGame,userData)=>{
+      if(objGame.player_1._id === userData._id)
+        socket.to(objGame.player_2.socket_id).emit("gameAcceptedByEnemy")
+      else
+        socket.to(objGame.player_1.socket_id).emit("gameAcceptedByEnemy")
+      
+      getGameStatus(objGame._id)
+        .then((status)=>{
+          if(status !== "half-accepted")
+            updateGameStatus(objGame._id,"half-accepted")
+          else{
+            updateGameStatus(objGame._id,"playing")
+            updateUserStatus(objGame.player_1._id, objGame.player_1.socket_id, "playing")
+            updateUserStatus(objGame.player_2._id, objGame.player_2.socket_id, "playing")
+
+            io.to(objGame.player_1.socket_id).to(objGame.player_2.socket_id).emit("startGame",objGame)
+          }
+        })
       })
 
-      //user decline a game
-      socket.on("declineGame",(objGame,userData)=>{
-        updateUserStatus(userData._id,socket.id,"online")
+      socket.on("newPlayerMovement",(newGameState)=>{
+        updateGame(newGameState)
           .then(()=>{
-            if(objGame.player_1._id === userData._id)
-              socket.to(objGame.player_2.socket_id).emit("gameDeclinedByEnemy")
-            else
-              socket.to(objGame.player_1.socket_id).emit("gameDeclinedByEnemy")
-            
-            updateGameStatus(objGame._id,"rejected")
+            io.to(newGameState.player_1.socket_id ).to(newGameState.player_2.socket_id).emit("updateGame",newGameState)
           })
       })
 
-      socket.on("acceptGame",(objGame,userData)=>{
-        if(objGame.player_1._id === userData._id)
-          socket.to(objGame.player_2.socket_id).emit("gameAcceptedByEnemy")
-        else
-          socket.to(objGame.player_1.socket_id).emit("gameAcceptedByEnemy")
-        
-        getGameStatus(objGame._id)
-          .then((status)=>{
-            if(status !== "half-accepted")
-              updateGameStatus(objGame._id,"half-accepted")
-            else{
-              updateGameStatus(objGame._id,"playing")
-              updateUserStatus(objGame.player_1._id, objGame.player_1.socket_id, "playing")
-              updateUserStatus(objGame.player_2._id, objGame.player_2.socket_id, "playing")
+      socket.on("playerWin", player => saveVictory(player))
 
-              io.to(objGame.player_1.socket_id).to(objGame.player_2.socket_id).emit("startGame")
-            }
-          })
-        })
+      socket.on("playeDefeat", player => saveDefeat(player))
 
-        socket.on("newPlayerMovement",(newGameState)=>{
-          updateGame(newGameState)
-            .then(()=>{
-              io.to(newGameState.player_1.socket_id ).to(newGameState.player_2.socket_id).emit("updateGame",newGameState)
-            })
-        })
-
-        socket.on("playerWin",(player)=> saveVictory(player))
-
-        socket.on("playeDefeat",(player)=> saveDefeat(player))
-
-        socket.on("playersDraw",(player_1,player_2)=>{
-          saveDraw(player_1)
-          saveDraw(player_2)
-        })
-
+      socket.on("playersDraw",(player_1,player_2)=>{
+        saveDraw(player_1)
+        saveDraw(player_2)
+      })
 
     })
+    
     
     //Function to notify users of a new game and send object with the init game
     pairingProcess = async (users: { socket_id: string | string[]; }[])=>{

@@ -16,30 +16,6 @@ import WarningNavBar from "@/components/WarningNavBar"
 
 const socket = io('http://localhost:3001')
 
-type objUserData = {
-  _id:string,
-  email:string,
-  victories:number,
-  defeats:number, 
-  draws:number,
-  total_games:number,
-  status:string
-}
-
-type objGame = {
-  _id:string,
-  board:Array<string>,
-  player_1:object,
-  player_2:object, 
-  turn:string,
-  status:string,
-  date:object,
-  movements:number,
-  winner:object,
-  result:string
-}
-
-
 const initUserData:objUserData = {
   _id:"",
   email:"",
@@ -49,7 +25,6 @@ const initUserData:objUserData = {
   total_games:0,
   status:""
 }
-
 const initGameData:objGame = {
   _id:"",
   board:[],
@@ -63,9 +38,14 @@ const initGameData:objGame = {
   result:""
 }
 
+let pairingAttempts = 0
+
 export default function Home(){
 
-    const [currentPlayerIcon, setCurrentPlayerIcon] = useState("")
+    const [isUserLogged, setIsUserLogged] = useState(false)
+    const [isUserInGame, setIsUserInGame] = useState(false)
+
+    const [currentPlayerIcon, setCurrentPlayerIcon] = useState("without player")
     const [userData,setUserData] = useState(initUserData)
     const [gameState,setGameState] = useState(initGameData)
 
@@ -73,13 +53,11 @@ export default function Home(){
 
     const [showModalAceptGame, setShowModalAceptGame] = useState(false)
     const [showModalBottons, setShowModalBottons] = useState("")
-    const [showBoardGame, setShowBoardGame] = useState(true)
     const [isLoading, setIsLoading] = useState(false)
 
     const [labelTurn, setLabelTurn] = useState("")
 
-
-    const [isUserLogged, setIsUserLogged] = useState(false)
+    const [movementAlert, setMovementAlert] = useState("")
 
 
     useEffect(() => {
@@ -95,15 +73,15 @@ export default function Home(){
     }, []);
 
 
-    //Si el emparejamiento encontro un juego
-    socket.on("startGame",()=>{
+    //Si los 2 usuarios aceptaron el juego
+    socket.on("startGame",(objGame)=>{
       setShowModalAceptGame(false)
-      setShowBoardGame(true)
-      //change game status to "playing in mongodb"
+      setIsUserInGame(true)
     })
 
     //Si el emparajuemto fue satifactorio
     socket.on("initGame",(objGame)=>{
+      pairingAttempts = 0
       setIsLoading(false)
       setGameState(objGame)
       if(objGame.player_1._id === getCookie('user_id_tictactoe')){
@@ -116,14 +94,19 @@ export default function Home(){
       setShowModalAceptGame(true)
     })
 
+    //to process movements of the users
     socket.on("updateGame",(objGame)=>{
       setGameState(objGame)
 
       if(objGame.result === "draw"){
-        setLabelTurn("Draw")
+        setLabelTurn("Game finished in draw")
+
         setTimeout(()=>{
           location.href="/"
-        },3000)
+        },4000)
+
+        setMovementAlert("Reloading website...")
+
       }
 
       if(objGame.winner !== null){
@@ -132,9 +115,10 @@ export default function Home(){
         else
           setLabelTurn("You lost!")
 
-          setTimeout(()=>{
-            location.href="/"
-          },3000)
+        setTimeout(()=>{
+          location.href="/"
+        },4000)
+        setMovementAlert("Reloading website...")
       }
 
 
@@ -150,7 +134,7 @@ export default function Home(){
     //detect a click on a cell
     function handleCellClick(cellNumber:number) {
       if(gameState.status === "finished"){
-          return
+        return
       }
       const newGameState = gameState
       //si es tu turno se habilita el teclado
@@ -163,9 +147,11 @@ export default function Home(){
           if(currentPlayerIcon === "X"){
             newGameState.turn = "O"
           }
+          
           if(currentPlayerIcon === "O"){
             newGameState.turn = "X"
           }
+          
 
           const whoIsWinner = calculateWinner(newGameState.board)
           if(whoIsWinner?.winner === "X"){
@@ -174,14 +160,12 @@ export default function Home(){
             socket.emit("playerWin",gameState.player_2)
             socket.emit("playeDefeat",gameState.player_1)
             
-
           }
           else if(whoIsWinner?.winner === "O"){
             newGameState.winner = gameState.player_1
             newGameState.result = "Player 1 wins"
             socket.emit("playerWin",gameState.player_1)
             socket.emit("playeDefeat",gameState.player_2)
-
             
           }
           else if(newGameState.movements === 9){
@@ -193,17 +177,28 @@ export default function Home(){
           socket.emit('newPlayerMovement', newGameState)
 
         }else{
-          alert("invalid movement")
+          setMovementAlert("invalid movement")
+
+          setTimeout(()=>{
+            setMovementAlert("")
+          },3000)
         }
 
       }else{
-        alert("is not you turn")
+        if(gameState.status === "created")
+          setMovementAlert("is not you turn")
+        else 
+          setMovementAlert("init a game first")
+
+        setTimeout(()=>{
+          setMovementAlert("")
+        },3000)
       }
     }
 
     //if the enemy declined the game
     socket.on("gameDeclinedByEnemy",()=>{
-      setEnemyStatusText("Your enemy declined the game")
+      setEnemyStatusText("Your enemy declined the game, reload the website to search another game")
       setShowModalBottons("hidden")
     })
 
@@ -218,11 +213,22 @@ export default function Home(){
      //if the user is ready to pairing
     function clickSearchGame(){
       setIsLoading(true)
-      socket.emit('searchGame', userData._id)
+      pairingAttempts+=1
+      console.log(pairingAttempts)
+      //this recursive call to function removes a bug in pairing 
       setTimeout(()=>{
-        alert("Game not found, no players online, try again later");
-        setIsLoading(false)
-      },10000)
+        if(pairingAttempts >= 5){
+          pairingAttempts = 0
+          alert("No players online, try again later.")
+          setIsLoading(false)
+          return;
+        }
+        if(pairingAttempts !== 0){
+          socket.emit('searchGame', userData._id)
+          clickSearchGame()
+        }
+      },2000)
+
     }
 
     //user reject the game
@@ -239,26 +245,25 @@ export default function Home(){
         <>          
           <Navbar/>
 
-          {isUserLogged ?
-
+        { isUserLogged ?
 
           <div className="float-left w-full mt-3 ">
             <div className="w-full flex flex-col items-center">
               
-              <div className="sm:w-10/12 md:w-8/12 lg:w-7/12 xl:w-5/12 2xl:w-4/12 w-10/12 text-white flex flex-col items-center	p-5 m-3 hover:bg-amber-200 hover:text-black">
-                <h1 className="text-3xl">TIC TAC TOE GAME</h1>
+              <div className="sm:w-10/12 md:w-8/12 lg:w-7/12 xl:w-5/12 2xl:w-4/12 w-10/12 text-white flex flex-col items-center	p-5 m-3 bg-zinc-800 ">
+                <h1 className="text-3xl"> TIC TAC TOE GAME </h1>
               </div>
               
               <div className="sm:w-10/12 md:w-8/12 lg:w-7/12 xl:w-5/12 2xl:w-4/12 w-10/12 bg-zinc-800 p-4 float-left items-center rounded-3xl p-5 ">
 
-                { showBoardGame ? 
                   <Board 
                     player={currentPlayerIcon}
                     boardState={gameState.board}
                     labelGameStatus={labelTurn}
                     onCellClick={handleCellClick} 
+                    isGameStart={isUserInGame}
+                    movementAlert={movementAlert}
                   />
-                  : undefined }
 
               
               </div>
@@ -267,9 +272,10 @@ export default function Home(){
 
             </div>
           </div>
+
         : <WarningNavBar/>  }
 
-            { showModalAceptGame ? 
+          { showModalAceptGame ? 
             <ModalConfirmGame
               player={currentPlayerIcon} 
               onDeclineGame={declineGame} 

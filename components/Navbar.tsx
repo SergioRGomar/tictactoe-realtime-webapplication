@@ -22,7 +22,7 @@ export default function Navbar(){
 
             <a href="/top-players">
                 <div className="float-left m-2 p-2 hover:bg-zinc-100 hover:cursor-pointer	hover:text-amber-500">
-                    <i className="fa-solid fa-trophy"></i> Top 10 players
+                    <i className="fa-solid fa-trophy"></i> Top 10
                 </div>
             </a>
 

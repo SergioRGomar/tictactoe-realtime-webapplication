@@ -3,7 +3,6 @@ import { userModel } from './users/userModel'
 import { gameModel } from './games/gameModel'
 import { ladeboardModel } from './ladeboards/ladeboardModel'
 
-
 type typeObjGame_= {
     _id:string,
     board:Array<string>,
@@ -16,7 +15,6 @@ type typeObjGame_= {
     winner:object,
     result:string
 }
-
 
 type typeObjGame= {
     board:Array<string>,
@@ -48,7 +46,6 @@ export const startdbConnection = async (URL_MONGO:string,database:string) => {
 //USERS
 export const updateUserStatus = async (user_id:string,socket_id:string,status:string)=>{
     
-    ///HAY QUE BUSCAR SI EL USUARIO ESTABA YA EN UN JUEGO Y LO MANDAMOS AL JUEGO
     let match = {}
     if(user_id === "")
         match = {socket_id: socket_id}

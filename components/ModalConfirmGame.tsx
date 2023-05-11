@@ -22,8 +22,8 @@ export default function ModalConfirmGame(props:propsModalAceptGame){
                 
                 <div className='text-black flex flex-col justify-center'>
                     
-                    <h1 className='text-2xl'>Game findend</h1>
-                    <h1 className='text-4xl'>You are the player {props.player}</h1>
+                    <h1 className='text-2xl'>Found game</h1>
+                    <h1 className='text-4xl'>You are the player <span className='font-sigmar_'>{props.player}</span></h1>
 
                     <h1 className='text-red-900'>{props.enemyStatusText}</h1>
                 </div>

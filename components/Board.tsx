@@ -10,12 +10,14 @@ type boardProps = {
     player:string,
     boardState:Array<string>
     labelGameStatus:string,
-    onCellClick:Function  
+    onCellClick:Function,
+    isGameStart:boolean,
+    movementAlert:string
 }
 export default function Board(props:boardProps){
 
     const [cellStyles] = useState(Array(9).fill(cell_style_default))
-
+    
     return(
         <>
             <div className="bg-zinc-900 w-full p-5">
@@ -24,9 +26,17 @@ export default function Board(props:boardProps){
                     <div className="p-3 text-center bg-zinc-800  hover:bg-zinc-800">1:00</div>
                 </div>*/}
 
+                {props.isGameStart ? 
                 <div className="flex flex-col text-white items-center">
                     <h1 className="text-green-400">You are the player {props.player}</h1>
                 </div>
+                : 
+                <div className="flex flex-col">
+                    <div className="float-left w-full bg-red-800 text-white p-2 text-sm text-center">
+                        <h1>Status: NOT IN GAME. To play a game, click on the "Find a Game" button</h1>
+                    </div>
+                </div>
+                }
 
                 <div className="flex flex-col text-white items-center">
                     <span className="w-full m-4 font-black w-full text-center text-2xl">{props.labelGameStatus}</span>
@@ -46,6 +56,12 @@ export default function Board(props:boardProps){
                     <Cell cellStyle={cellStyles[6]} value={props.boardState[6]} onCellClick={() => props.onCellClick(6)}/>
                     <Cell cellStyle={cellStyles[7]} value={props.boardState[7]} onCellClick={() => props.onCellClick(7)}/>
                     <Cell cellStyle={cellStyles[8]} value={props.boardState[8]} onCellClick={() => props.onCellClick(8)}/>
+                </div>
+
+                <div className="flex flex-col m-3">
+                    <div className="float-left w-full  p-2 text-red-500 text-sm text-center">
+                        <h1>{props.movementAlert}</h1>
+                    </div>
                 </div>
                 
             </div>
