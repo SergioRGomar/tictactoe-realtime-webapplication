@@ -11,7 +11,7 @@ userRouter.get("/",async (req,res) =>{
     let ladeboard = req.query.ladeboard;
 
     if(ladeboard){
-        const result = await ladeboardModel.find().sort({victories:-1})
+        const result = await ladeboardModel.find().sort({victories:-1}).limit(10)
         res.status(200).send({users:result})// {ladeboard:ladeboard}
     }else{
         let match = {_id:user_id};

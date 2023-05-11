@@ -40,6 +40,11 @@ const initGameData:objGame = {
 
 let pairingAttempts = 0
 
+const cell_style_default = "hover:bg-zinc-300 m-1 text-4xl font-sigmar_ font-black w-14 h-14 rounded-lg flex items-center justify-center bg-white shadow-lg"
+const cell_style_player_1 = "text-red-500"
+const cell_style_player_2 = "text-blue-500"
+const cell_style_winner = "text-green-60"
+
 export default function Home(){
 
     const [isUserLogged, setIsUserLogged] = useState(false)
@@ -58,6 +63,8 @@ export default function Home(){
     const [labelTurn, setLabelTurn] = useState("")
 
     const [movementAlert, setMovementAlert] = useState("")
+
+    const [cellStyles,setCellStyles] = useState(Array(9).fill(cell_style_default))
 
 
     useEffect(() => {
@@ -146,6 +153,7 @@ export default function Home(){
 
           if(currentPlayerIcon === "X"){
             newGameState.turn = "O"
+
           }
           
           if(currentPlayerIcon === "O"){
@@ -263,12 +271,13 @@ export default function Home(){
                     onCellClick={handleCellClick} 
                     isGameStart={isUserInGame}
                     movementAlert={movementAlert}
+                    cellStyle={cellStyles}
                   />
 
               
               </div>
 
-              <button onClick={clickSearchGame} className="m-8 w-4/12 bg-amber-300 hover:bg-amber-500 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">Find a game</button>
+              <button onClick={clickSearchGame} className="sm:w-8/12 md:w-6/12 lg:w-4/12 xl:w-4/12 2xl:w-4/12 w-6/12 m-8 bg-zinc-700 hover:bg-zinc-900 text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow">Find a game</button>
 
             </div>
           </div>

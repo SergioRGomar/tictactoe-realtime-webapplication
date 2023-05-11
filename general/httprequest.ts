@@ -1,5 +1,5 @@
 
-const urlUsersApi = "http://localhost:3001/users"
+const urlUsersApi = "http://localhost:3002/users"
 
 export const getUser = async (user_id:string) => {
     try{
