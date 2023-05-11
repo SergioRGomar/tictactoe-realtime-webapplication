@@ -13,8 +13,9 @@ import { calculateWinner } from "@/general/game"
 import '@/styles/modal.module.css'
 import Navbar from "@/components/Navbar"
 import WarningNavBar from "@/components/WarningNavBar"
+import Script from "next/script"
 
-const socket = io('http://localhost:3001')
+const socket = io('http://localhost:3002')
 
 const initUserData:objUserData = {
   _id:"",
@@ -250,7 +251,10 @@ export default function Home(){
       socket.emit('acceptGame', gameState, userData)
     }
     return(
-        <>          
+        <>     
+          <Script src="https://kit.fontawesome.com/c1144c316a.js" />
+
+
           <Navbar/>
 
         { isUserLogged ?

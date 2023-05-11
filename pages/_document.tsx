@@ -13,7 +13,6 @@ export default function Document() {
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet" />
 
 
-        <script src="https://kit.fontawesome.com/c1144c316a.js"></script>
       </Head>
 
       <body>

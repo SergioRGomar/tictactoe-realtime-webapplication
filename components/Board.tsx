@@ -1,7 +1,4 @@
-import { useState } from "react";
 import Cell from "./Cell";
-
-
 
 type boardProps = {
     player:string,
@@ -19,10 +16,6 @@ export default function Board(props:boardProps){
         <>
             <div className="bg-zinc-900 w-full p-5">
                 
-                {/*<div className="flex flex-row items-center text-white m-2">
-                    <div className="p-3 text-center bg-zinc-800  hover:bg-zinc-800">1:00</div>
-                </div>*/}
-
                 {props.isGameStart ? 
                 <div className="flex flex-col text-white items-center">
                     <h1 className="text-green-400">You are the player {props.player}</h1>
@@ -30,7 +23,7 @@ export default function Board(props:boardProps){
                 : 
                 <div className="flex flex-col">
                     <div className="float-left w-full bg-red-800 text-white p-2 text-sm text-center">
-                        <h1>Status: NOT IN GAME. To play a game, click on the "Find a Game" button</h1>
+                        <h1>Status: NOT IN GAME. To play a game, click on the &quot;Find a Game&quot; button</h1>
                     </div>
                 </div>
                 }
